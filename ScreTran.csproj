@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="TranslationWindow.xaml.cs">
+    <Compile Update="Views\TranslationWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
