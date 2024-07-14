@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreTran", "ScreTran.csproj", "{18DC438B-9545-4A81-B8CD-C28957C187B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RawInput", "..\RawInput\RawInput.csproj", "{7615838C-39E1-40DB-AAB4-9B893D259DAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18DC438B-9545-4A81-B8CD-C28957C187B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18DC438B-9545-4A81-B8CD-C28957C187B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18DC438B-9545-4A81-B8CD-C28957C187B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18DC438B-9545-4A81-B8CD-C28957C187B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7615838C-39E1-40DB-AAB4-9B893D259DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7615838C-39E1-40DB-AAB4-9B893D259DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7615838C-39E1-40DB-AAB4-9B893D259DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7615838C-39E1-40DB-AAB4-9B893D259DAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {38EDD70F-EE32-4461-95B6-2EBD596A09BA}
+	EndGlobalSection
+EndGlobal

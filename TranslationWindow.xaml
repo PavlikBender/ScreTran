@@ -1,0 +1,50 @@
+﻿<Window x:Class="ScreTran.TranslationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScreTran" 
+        d:DataContext="{d:DesignInstance Type=local:TranslationViewModel}"
+        d:DesignHeight="250"
+        d:DesignWidth="1000"
+        mc:Ignorable="d"
+        Title="Окно перевода" 
+        Height="{Binding Position.Height, Mode=TwoWay}" 
+        Width="{Binding Position.Width, Mode=TwoWay}" 
+        Left="{Binding Position.Left, Mode=TwoWay}"
+        Top="{Binding Position.Top, Mode=TwoWay}"
+        Foreground="{x:Null}" 
+        AllowsTransparency="True" 
+        WindowStyle="None" 
+        MouseMove="Window_MouseMove" 
+        MouseLeftButtonDown="Window_MouseLeftButtonDown" 
+        MouseLeftButtonUp="Window_MouseLeftButtonUp" 
+        Topmost="True" 
+        IsTabStop="False" 
+        Background="{x:Null}" 
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+    <Border CornerRadius="5">
+        <Border.Background>
+            <SolidColorBrush Color="Black" Opacity="0.2"/>
+        </Border.Background>
+        <Grid Margin="5,1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="TextBlock" Grid.Row="1" Text="{Binding Parameters.TranslatedLine, Mode=TwoWay}" d:Text="Окно перевода" FontSize="{Binding Settings.FontSize}" Foreground="White" TextAlignment="Center" FontFamily="Segoe UI Variable Display Semibold" TextWrapping="Wrap">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="0" ShadowDepth="3" />
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock x:Name="Confidence" Grid.Row="0" Text="{Binding Parameters.Confidence, Mode=TwoWay}" d:Text="0" FontSize="12" Foreground="White" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="0" ShadowDepth="2" />
+                </TextBlock.Effect>
+            </TextBlock>
+        </Grid>
+    </Border>
+</Window>
