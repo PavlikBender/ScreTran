@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
+using System.Diagnostics;
 using RawInput;
 
 namespace ScreTran;
@@ -23,6 +24,12 @@ public partial class MainWindow : Window
         _maximizedThickness = new Thickness(8);
 
         MainWindowBorder.BorderThickness = _restoredThickness;
+
+        Link.RequestNavigate += (sender, e) =>
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
+        };
 
         this.DataContext = App.GetService<MainWindowModel>();
     }

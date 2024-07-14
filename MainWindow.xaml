@@ -9,7 +9,7 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DataContext="{d:DesignInstance Type=local:MainWindowModel}"
     Width="600"
-    Height="502"
+    Height="525"
     mc:Ignorable="d"
     Title="ScreTran" Background="#FF313338" WindowStyle="None" ResizeMode="NoResize" Loaded="Window_Loaded">
 
@@ -158,6 +158,7 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -191,10 +192,13 @@
                                 <Label Content="Порог удаления строки"/>
                                 <xctk:IntegerUpDown Value="{Binding Settings.ShortLineThreshold}" Increment="1" Maximum="50" Minimum="0" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14"/>
                             </StackPanel>
-                            <StackPanel Grid.Row="5" Margin="12"  Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Grid.Row="5" Margin="12" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button x:Name="ResetSettingsToDefault" Margin="0,0,8,0" Content="Вернуть по умолчанию" Command="{Binding ResetSettingsToDefaultCommand}" Style="{StaticResource StandardButtonStyle}" ToolTip="Вернуть настройки по умолчанию."/>
                                 <Button x:Name="ResetWindowPosition" Content="Сбросить положение окон" Command="{Binding ResetWindowsPositionCommand}" Style="{StaticResource StandardButtonStyle}"/>
                             </StackPanel>
+                            <TextBlock Grid.Row="6" Margin="0,0,0,8" FontSize="12" HorizontalAlignment="Center">
+    <Hyperlink x:Name="Link" NavigateUri="https://github.com/PavlikBender/ScreTran" Foreground="#FFAFAFAF">О проекте</Hyperlink>
+                            </TextBlock>
                         </Grid>
                     </Expander>
                 </Border>
