@@ -148,8 +148,13 @@ public class ExecutionService : IExecutionService
             if (line.EndsWith(','))
                 line = $"{line.TrimEnd(',')}.";
 
-            // Удаление пустых строк или сторк с артефактами.
-            line = RemoveShortLines(line, _settings.ShortLineThreshold);
+            // Заменить двойные переносы одинарными, одинарные переносы на пробелы.
+            // Так текст переводится намного лучше.
+            line = string.Join("\n", line.Split("\n\n").Select(l => l.Replace("\n", " ").Trim()));
+
+            // Удаление пустых строк или строк с артефактами.
+            if (_settings.ShortLineThreshold > 0)
+                line = RemoveShortLines(line, _settings.ShortLineThreshold);
 
             if (string.IsNullOrWhiteSpace(line))
                 return;
@@ -182,6 +187,6 @@ public class ExecutionService : IExecutionService
     /// </summary>
     private string RemoveShortLines(string text, int threshold)
     {
-        return string.Join("\n", text.Split("\n").Select(l => l.Trim()).Where(l => l.Length > threshold));
+        return string.Join("\n", text.Split("\n").Select(l => l.Trim()).Where(l => l.Length > threshold || l.Length == 0));
     }
 }

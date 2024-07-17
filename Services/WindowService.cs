@@ -1,9 +1,32 @@
-﻿using System.Windows;
+﻿using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace ScreTran;
 
 public class WindowService : IWindowService
 {
+    // Константы для скрытия и удержания окна на переднем плане.
+    private const int SWP_NOMOVE = 0x0002;
+    private const int SWP_NOSIZE = 0x0001;
+    private const int SWP_NOACTIVATE = 0x0010;
+    private const int HWND_TOP = 0;
+
+    private const int SWP_SHOWWINDOW = 0x0040;
+    private const int SWP_HIDEWINDOW = 0x0080;
+
+    // Метод для удержания на переднем плане.
+    [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
+    public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+
+    // Владелец всех окон.
+    private Window? _owner;
+
+    // Его хендл.
+    private IntPtr _ownerHandle;
+
+    private readonly Timer _timer;
+
     /// <summary>
     /// Registered windows.
     /// </summary>
@@ -14,10 +37,45 @@ public class WindowService : IWindowService
     /// </summary>
     private readonly Dictionary<string, Window> _createdWindows;
 
+    /// <summary>
+    /// List of windows always on top.
+    /// </summary>
+    private readonly List<Window> _onTopWindows;
+
     public WindowService()
     {
+        _owner = null;
+        _ownerHandle = IntPtr.Zero;
         _windows = new();
         _createdWindows = new();
+        _onTopWindows = new();
+
+        _timer = new Timer(ProccessByTimerCommands, null, 0, 1000);
+    }
+
+    /// <summary>
+    /// Timer execution.
+    /// </summary>
+    private void ProccessByTimerCommands(object? state)
+    {
+        if (_ownerHandle == IntPtr.Zero)
+            return;
+        // Таймер каждую секунду старается выставить окно владельца и его наследников на передний план.
+        SetWindowPos(_ownerHandle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    }
+
+    /// <summary>
+    /// Установить владельца всех окон.
+    /// </summary>
+    /// <param name="owner">Владелец окон.</param>
+    public void SetOwner(Window owner)
+    {
+        _owner = owner;
+        _ownerHandle = new WindowInteropHelper(_owner).Handle;
+        foreach (var window in _createdWindows.Values.Where(w => !Equals(w, owner)))
+        {
+            window.Owner = _owner;
+        }
     }
 
     /// <summary>
@@ -31,7 +89,12 @@ public class WindowService : IWindowService
 
         // Если окно не создано, создать его.
         if (!_createdWindows.ContainsKey(windowName))
+        {
             _createdWindows[windowName] = (Window)App.GetService(_windows[windowName]);
+        }
+
+        if (_owner?.IsLoaded == true && !Equals(_owner, _createdWindows[windowName]))
+            _createdWindows[windowName].Owner = _owner;
 
         _createdWindows[windowName].Show();
     }
@@ -43,14 +106,8 @@ public class WindowService : IWindowService
     {
         if (!_createdWindows.ContainsKey(windowName))
             return;
-
-        // HACK если не устанавливать значение ShowInTaskbar - true, то окна не будут полность сворачиваться, а оставаться маленьким прямоугольником на экране.
-        var showInTaskBar = _createdWindows[windowName].ShowInTaskbar;
-        _createdWindows[windowName].ShowInTaskbar = true;
-
-        _createdWindows[windowName].WindowState = WindowState.Minimized;
-
-        _createdWindows[windowName].ShowInTaskbar = showInTaskBar;
+        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
+        SetWindowPos(handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_HIDEWINDOW);
     }
 
     /// <summary>
@@ -60,8 +117,8 @@ public class WindowService : IWindowService
     {
         if (!_createdWindows.ContainsKey(windowName))
             return;
-
-        _createdWindows[windowName].WindowState = WindowState.Normal;
+        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
+        SetWindowPos(handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
     }
 
     /// <summary>

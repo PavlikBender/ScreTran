@@ -76,8 +76,8 @@ public partial class SettingsModel : ObservableObject
     {
         FontSize = 21;
         Key = new Key(0x7B);
-        ConfidenceThreshold = 0.75f;
-        ShortLineThreshold = 3;
+        ConfidenceThreshold = 0.77f;
+        ShortLineThreshold = 0;
         Brightness = -1.94f;
     }
 }

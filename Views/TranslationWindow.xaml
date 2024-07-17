@@ -29,18 +29,18 @@
     </WindowChrome.WindowChrome>
     <Border CornerRadius="5">
         <Border.Background>
-            <SolidColorBrush Color="Black" Opacity="0.2"/>
+            <SolidColorBrush Color="Black" Opacity="0.3"/>
         </Border.Background>
-        <Grid Margin="5,1">
+        <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock x:Name="TextBlock" Grid.Row="1" Text="{Binding Parameters.TranslatedLine, Mode=TwoWay}" d:Text="Окно перевода" FontSize="{Binding Settings.FontSize}" Foreground="White" TextAlignment="Center" FontFamily="Segoe UI Variable Display Semibold" TextWrapping="Wrap">
+            <TextBlock x:Name="TextBlock" Grid.Row="1" Margin="16,8" Text="{Binding Parameters.TranslatedLine, Mode=TwoWay}" d:Text="Окно перевода" FontSize="{Binding Settings.FontSize}" Foreground="White" FontFamily="Segoe UI Variable Display Semibold" TextWrapping="Wrap">
                 <TextBlock.Effect>
                     <DropShadowEffect BlurRadius="0" ShadowDepth="3" />
                 </TextBlock.Effect>
             </TextBlock>
-            <TextBlock x:Name="Confidence" Grid.Row="0" Text="{Binding Parameters.Confidence, Mode=TwoWay}" d:Text="0" FontSize="12" Foreground="White" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <TextBlock x:Name="Confidence" Grid.Row="0" Margin="5,1" Text="{Binding Parameters.Confidence, Mode=TwoWay}" d:Text="0" FontSize="12" Foreground="White" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <TextBlock.Effect>
                     <DropShadowEffect BlurRadius="0" ShadowDepth="2" />
                 </TextBlock.Effect>

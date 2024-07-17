@@ -13,9 +13,18 @@ public partial class SelectionWindow : Window
     public SelectionWindow()
     {
         InitializeComponent();
+
         _mouseDelta = new Point(0, 0);
 
         this.DataContext = App.GetService<SelectionViewModel>();
+
+        Loaded += Window_Loaded;
+    }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        var windowService = App.GetService<IWindowService>();
+        windowService.SetOwner(this);
     }
 
     private void Window_MouseMove(object sender, MouseEventArgs e)

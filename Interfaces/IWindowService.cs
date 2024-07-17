@@ -28,4 +28,10 @@ public interface IWindowService
     /// Normalize window by window name.
     /// </summary>
     void Normalize(string windowName);
+
+    /// <summary>
+    /// Установить владельца всех окон.
+    /// </summary>
+    /// <param name="owner">Владелец окон.</param>
+    void SetOwner(Window owner);
 }
