@@ -1,5 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Xaml.Behaviors;
 using RawInput;
 
 namespace ScreTran;
@@ -12,18 +14,6 @@ public partial class MainWindowModel : ObservableObject
     private readonly IInputService _inputSevice;
 
     private bool _isMinimized;
-
-    /// <summary>
-    /// Image brightness for Tesseract Engine.
-    /// </summary>
-    [ObservableProperty]
-    private float _brightness;
-
-    partial void OnBrightnessChanged(float value)
-    {
-        // Pass brightness to settings.
-        Settings.Brightness = value;
-    }
 
     /// <summary>
     /// Is execution service started?
@@ -42,6 +32,12 @@ public partial class MainWindowModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private SettingsModel _settings;
+
+    /// <summary>
+    /// List of behaviours.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<Enumerations.Translator> _translators;
 
     /// <summary>
     /// Start execution.
@@ -107,7 +103,6 @@ public partial class MainWindowModel : ObservableObject
     private void ResetSettingsToDefault()
     {
         Settings.ResetToDefault();
-        Brightness = Settings.Brightness;
     }
 
     public MainWindowModel(ISettingsService settingsService, IParametersService parametersService, IWindowService windowService, IExecutionService executionService, IInputService inputService)
@@ -115,7 +110,13 @@ public partial class MainWindowModel : ObservableObject
         _settingsService = settingsService;
         Settings = _settingsService.Settings;
 
-        Brightness = Settings.Brightness;
+        _translators =
+        [
+            Enumerations.Translator.Google,
+            Enumerations.Translator.Yandex,
+            Enumerations.Translator.Bing,
+        ];
+
         IsStarted = false;
 
         IsKeySetting = false;

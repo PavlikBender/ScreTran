@@ -9,7 +9,7 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DataContext="{d:DesignInstance Type=local:MainWindowModel}"
     Width="600"
-    Height="525"
+    Height="460"
     mc:Ignorable="d"
     Title="ScreTran" Background="#FF313338" WindowStyle="None" ResizeMode="NoResize" Loaded="Window_Loaded">
 
@@ -20,6 +20,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+            <local:BoolToInvertedBoolConverter x:Key="BoolToInvertedBoolConverter"/>
             <Style TargetType="Label">
                 <Setter Property="Margin" Value="0,8,0,6"/>
                 <Setter Property="Foreground" Value="White"/>
@@ -157,8 +158,6 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -167,7 +166,16 @@
                                 <Label Content="Размер шрифта"/>
                                 <xctk:IntegerUpDown Value="{Binding Settings.FontSize}" Increment="1" Maximum="200" Minimum="1" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14"/>
                             </StackPanel>
-                            <StackPanel Grid.Row="1" ToolTip="Горячая клавиша, при нажатии которой скрываются/восстанавливаются области распознавания текста и перевода.&#x0a;При скрытии областей перевод останавливается.&#x0a;При восстановлении областей автоматически запускается перевод.">
+                            <StackPanel Grid.Row="1" ToolTip="Переводчик используемый для перевода текста.">
+                                <Label Content="Переводчик"/>
+                                <ComboBox Style="{DynamicResource ComboBoxStyle1}" SelectedItem="{Binding Settings.Translator, Mode=TwoWay}" ItemsSource="{Binding Translators}" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14">
+                                    <ComboBox.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FF1E1F22" />
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowFrameBrushKey}"/>
+                                    </ComboBox.Resources>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" ToolTip="Горячая клавиша, при нажатии которой скрываются/восстанавливаются области распознавания текста и перевода.&#x0a;При скрытии областей перевод останавливается.&#x0a;При восстановлении областей автоматически запускается перевод.">
                                 <Label Content="Горячая клавиша"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -180,24 +188,16 @@
                                     <Button Grid.Column="2" Content="Очистить" Command="{Binding ClearKeyCommand}" Style="{StaticResource StandardButtonStyle}" Width="100" Height="26" HorizontalAlignment="Right"/>
                                 </Grid>
                             </StackPanel>
-                            <StackPanel Grid.Row="2" ToolTip="Порог распознавания ниже которого не происходит перевод распознанного текста.&#x0a;При этом, чем ниже порог, тем больше артефактов возвращается при распознавания текста.&#x0a;Настраивать параметр нужно так, чтобы было как можно меньше артефактов, но и не было пропусков в переводе.">
-                                <Label Content="Порог распознавания"/>
-                                <xctk:DecimalUpDown FormatString="F2" Value="{Binding Settings.ConfidenceThreshold}" Increment=".01" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" />
+                            <StackPanel Grid.Row="3" ToolTip="Указывается частота в секундах с которой будет делаться захват экрана.&#x0a;Чем меньше частота, тем больше нагрузка на процессор.&#x0a;Если сделать частоту слишком большой - может происходить пропуск реплик.&#x0a;Недоступно для изменения если программа находится в процессе перевода.">
+                                <Label Content="Частота захвата экрана (с.)"/>
+                                <xctk:DecimalUpDown Value="{Binding Settings.Period}" Increment=".1" Maximum="10" Minimum="0.3" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" IsEnabled="{Binding IsStarted, Converter={StaticResource BoolToInvertedBoolConverter}}"/>
                             </StackPanel>
-                            <StackPanel Grid.Row="3">
-                                <Label Content="Яркость изображения" ToolTip="Указывается яркость области с которой необходимо распознать текст,&#x0a;низкая яркость позволяет лучше распознавать текст находящийся не на сплошном фоне.&#x0a;Параметр должен быть настроен так, что яркость должна быть минимальной, но не должно быть трудностей с распознаванием текста."/>
-                                <xctk:DecimalUpDown FormatString="F2" Value="{Binding Brightness}" Increment=".01" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" />
-                            </StackPanel>
-                            <StackPanel Grid.Row="4" ToolTip="(ЭКСПЕРИМЕНТАЛЬНАЯ НАСТРОЙКА)&#x0a;Параметр отвечает за количество символов в строке, при которой эта строка удаляется (кроме пробелов).&#x0a;Этот параметр нужен, если у вас стоит низкий порог распознавания и переводимый текст всё же содержит артефакты (строки отсутсвующие на экране, например: &amp; \s *).&#x0a;Не стоит ставить очень высокое значение порога удаления строки, так как может потеряться часть переводимого текста.&#x0a;Значение - 0 отключает настройку.">
-                                <Label Content="Порог удаления строки"/>
-                                <xctk:IntegerUpDown Value="{Binding Settings.ShortLineThreshold}" Increment="1" Maximum="50" Minimum="0" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="5" Margin="12" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Grid.Row="4" Margin="12" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button x:Name="ResetSettingsToDefault" Margin="0,0,8,0" Content="Вернуть по умолчанию" Command="{Binding ResetSettingsToDefaultCommand}" Style="{StaticResource StandardButtonStyle}" ToolTip="Вернуть настройки по умолчанию."/>
                                 <Button x:Name="ResetWindowPosition" Content="Сбросить положение окон" Command="{Binding ResetWindowsPositionCommand}" Style="{StaticResource StandardButtonStyle}"/>
                             </StackPanel>
-                            <TextBlock Grid.Row="6" Margin="0,0,0,8" FontSize="12" HorizontalAlignment="Center">
-    <Hyperlink x:Name="Link" NavigateUri="https://github.com/PavlikBender/ScreTran" Foreground="#FFAFAFAF">О проекте</Hyperlink>
+                            <TextBlock Grid.Row="5" Margin="0,0,0,8" FontSize="12" HorizontalAlignment="Center">
+                                <Hyperlink x:Name="Link" NavigateUri="https://github.com/PavlikBender/ScreTran" Foreground="#FFAFAFAF">О проекте</Hyperlink>
                             </TextBlock>
                         </Grid>
                     </Expander>

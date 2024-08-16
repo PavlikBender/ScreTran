@@ -11,12 +11,4 @@ public interface IExecutionService
     /// Stops service.
     /// </summary>
     void Stop();
-
-    /// <summary>
-    /// Return true if service started, otherwise false.
-    /// </summary>
-    bool IsStarted
-    {
-        get;
-    }
 }

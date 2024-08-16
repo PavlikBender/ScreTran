@@ -18,22 +18,17 @@ public partial class SettingsModel : ObservableObject
     private IKey _key;
 
     /// <summary>
-    /// Confidence threshold.
+    /// Timer period.
     /// </summary>
     [ObservableProperty]
-    private float _confidenceThreshold;
+    private float _period;
+
 
     /// <summary>
-    /// Removes short lines.
+    /// Translator.
     /// </summary>
     [ObservableProperty]
-    private int _shortLineThreshold;
-
-    /// <summary>
-    /// Screenshot brightness for Tesseract Engine.
-    /// </summary>
-    [ObservableProperty]
-    private float _brightness;
+    private Enumerations.Translator _translator;
 
     /// <summary>
     /// Selection window position.
@@ -76,8 +71,7 @@ public partial class SettingsModel : ObservableObject
     {
         FontSize = 21;
         Key = new Key(0x7B);
-        ConfidenceThreshold = 0.77f;
-        ShortLineThreshold = 0;
-        Brightness = -1.94f;
+        Period = 1.0f;
+        Translator = Enumerations.Translator.Google;
     }
 }

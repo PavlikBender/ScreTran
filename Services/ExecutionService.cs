@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using System.Drawing;
 using System.IO;
-using Tesseract;
+using System.Text.RegularExpressions;
+using OpenCvSharp;
+using Sdcb.PaddleInference;
+using Sdcb.PaddleOCR;
+using Sdcb.PaddleOCR.Models.Local;
 
 namespace ScreTran;
 
@@ -11,33 +13,30 @@ public class ExecutionService : IExecutionService
     private readonly IParametersService _parameters;
     private readonly ITranslationService _translationService;
     private readonly SettingsModel _settings;
-    private readonly Timer _timer;
-    private readonly TesseractEngine _engine;
-    private readonly ImageAttributes _imageAttributes;
+    private  Timer _timer;
+    private readonly string _regExPattern;
+
+    private readonly PaddleOcrAll _paddleOcrAll;
 
     private Task _lastTask;
     private string _lastLine;
-    private float _currentBrightness;
-
-    /// <summary>
-    /// Return true if service started, otherwise false.
-    /// </summary>
-    private bool _isStarted;
-    public bool IsStarted => _isStarted;
 
     public ExecutionService(ISettingsService settingsService, IParametersService parametersService, ITranslationService translationService)
     {
         _parameters = parametersService;
         _settings = settingsService.Settings;
 
-        _isStarted = false;
-        _timer = new Timer(ProccessByTimerCommands, null, 0, 700);
-        _engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
-        _imageAttributes = new();
-
         _lastLine = string.Empty;
-        _currentBrightness = 0;
         _translationService = translationService;
+
+        _regExPattern = @"\W";
+
+        _paddleOcrAll = new PaddleOcrAll(LocalFullModels.EnglishV4, PaddleDevice.Onnx())
+        {
+            AllowRotateDetection = false,
+            Enable180Classification = false,
+        };
+
     }
 
     /// <summary>
@@ -45,7 +44,8 @@ public class ExecutionService : IExecutionService
     /// </summary>
     public void Start()
     {
-        _isStarted = true;
+        var period = (int)(1000 * _settings.Period);
+        _timer = new Timer(ProccessByTimerCommands, null, 0, period);
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class ExecutionService : IExecutionService
     /// </summary>
     public void Stop()
     {
-        _isStarted = false;
+        _timer.Dispose();
     }
 
     /// <summary>
@@ -61,35 +61,11 @@ public class ExecutionService : IExecutionService
     /// </summary>
     private void ProccessByTimerCommands(object? state)
     {
-        if (!IsStarted)
-            return;
-
         // If previous task still running, skip creating new task.
         if (_lastTask?.Status == TaskStatus.Running)
             return;
 
         _lastTask = Task.Run(RecognizeTextAndTranslate);
-    }
-
-    /// <summary>
-    /// Updates color matrix of image. In current realization it's only change brightness and makes image black and white.
-    /// </summary>
-    private void UpdateColorMatrix()
-    {
-        var colorMatrix = new ColorMatrix(
-            new float[][] {
-                       new float[] {1, 1, 1, 0, 0},        // red
-                       new float[] {1, 1, 1, 0, 0},        // green
-                       new float[] {1, 1, 1, 0, 0},        // blue
-                       new float[] {0, 0, 0, 1, 0},        // alpha
-                       new float[] { _currentBrightness, _currentBrightness, _currentBrightness, 1, 1}         // https://stackoverflow.com/questions/55660749/how-to-use-a-slider-control-to-adjust-the-brightness-of-a-bitmap
-            }
-        );
-
-        // Set the new color matrix
-        _imageAttributes.SetColorMatrix(colorMatrix,
-           ColorMatrixFlag.Default,
-           ColorAdjustType.Bitmap);
     }
 
     /// <summary>
@@ -99,7 +75,7 @@ public class ExecutionService : IExecutionService
     private byte[] GetImage()
     {
         var selectionWindowPosition = _settings.SelectionWindowPosition;
-        using var stream = new MemoryStream();
+
         var bitmap = new Bitmap((int)selectionWindowPosition.Width - (_parameters.SelectionBorderThickness * 2),
                                 (int)selectionWindowPosition.Height - (_parameters.SelectionBorderThickness * 2));
         using (var g = Graphics.FromImage(bitmap))
@@ -109,16 +85,31 @@ public class ExecutionService : IExecutionService
                              (int)selectionWindowPosition.Top + _parameters.SelectionBorderThickness,
                              0,
                              0,
-            bitmap.Size,
-            CopyPixelOperation.SourceCopy);
+                             bitmap.Size,
+                             CopyPixelOperation.SourceCopy);
 
             var bmpRect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
             // Отрисовать применяя матрицу.
-            g.DrawImage(bitmap, bmpRect, 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, _imageAttributes);
+            g.DrawImage(bitmap, bmpRect, 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel);
         }
-        bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+
+        using var stream = new MemoryStream();
+        bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
 
         return stream.ToArray();
+    }
+
+    /// <summary>
+    /// Распознает текст на изображении с использованием PaddleOCR.
+    /// </summary>
+    /// <param name="sampleImageData">Массив байтов, представляющий изображение.</param>
+    /// <returns>Распознанный текст.</returns>
+    private string PaddleOCRRecognize(byte[] sampleImageData)
+    {
+        using var src = Cv2.ImDecode(sampleImageData, ImreadModes.Color);
+        // Уменьшаем размер картинки для экономии ресурсов.
+        Cv2.Resize(src, src, new OpenCvSharp.Size(src.Width * 0.6, src.Height * 0.6));
+        return _paddleOcrAll.Run(src).Text;
     }
 
     /// <summary>
@@ -126,67 +117,38 @@ public class ExecutionService : IExecutionService
     /// </summary>
     private void RecognizeTextAndTranslate()
     {
-        if (_currentBrightness != _settings.Brightness)
-        {
-            _currentBrightness = _settings.Brightness;
-            UpdateColorMatrix();
-        }
-
         try
         {
-            using var img = Pix.LoadFromMemory(GetImage());
-            using var page = _engine.Process(img);
-            // Получение текста и удаление стандартных артефактов.
-            var line = page.GetText().Replace("|", "I")
-                                     .Replace(" '", "")
-                                     .Replace(" \"", "")
-                                     .Replace(".,.", "...")
-                                     .Replace("., ", ".. ")
-                                     .Trim();
-
-            // Замена запятой на конце на точку.
-            if (line.EndsWith(','))
-                line = $"{line.TrimEnd(',')}.";
-
-            // Заменить двойные переносы одинарными, одинарные переносы на пробелы.
-            // Так текст переводится намного лучше.
-            line = string.Join("\n", line.Split("\n\n").Select(l => l.Replace("\n", " ").Trim()));
-
-            // Удаление пустых строк или строк с артефактами.
-            if (_settings.ShortLineThreshold > 0)
-                line = RemoveShortLines(line, _settings.ShortLineThreshold);
+            var line = PaddleOCRRecognize(GetImage());
 
             if (string.IsNullOrWhiteSpace(line))
                 return;
 
-            if (line == _lastLine)
+            line = line.Trim()
+                 // Для корректной обработки переводчиком нужно убрать переводы строк 
+                 .Replace("\n", " ")
+                 .Replace(",.", ",")
+                 .Replace(".,", ".")
+                 .Replace("?.", "?")
+                 .Replace("!.", "!")
+                 // Remove double dot.
+                 .Replace("..", ".")
+                 // Restore three dot.
+                 .Replace("..", "...");
+
+            var nakedLine = Regex.Replace(line.ToLower(), _regExPattern, string.Empty);
+
+            // Сравнение строк с удаленными знаками препинания и пробелами.
+            if (nakedLine == _lastLine)
                 return;
 
-            var currentConfidence = page.GetMeanConfidence();
+            _lastLine = nakedLine;
 
-            if (currentConfidence < _settings.ConfidenceThreshold)
-                return;
-
-            // Установить значения.
-            _parameters.Confidence = currentConfidence;
-            // Перевести текст.
-            _parameters.TranslatedLine = _translationService.Translate(line);
-
-            _lastLine = line;
+            _parameters.TranslatedLine = _translationService.Translate(line, _settings.Translator);
         }
         catch (Exception ex)
         {
-            Trace.TraceError(ex.ToString());
-            _parameters.Confidence = 0;
             _parameters.TranslatedLine = $"Error: {ex.Message}";
         }
-    }
-
-    /// <summary>
-    /// Removes lines that shorter than threshold.
-    /// </summary>
-    private string RemoveShortLines(string text, int threshold)
-    {
-        return string.Join("\n", text.Split("\n").Select(l => l.Trim()).Where(l => l.Length > threshold || l.Length == 0));
     }
 }

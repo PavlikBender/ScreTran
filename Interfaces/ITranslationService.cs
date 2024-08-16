@@ -5,7 +5,8 @@ public interface ITranslationService
     /// <summary>
     /// Translate input from english to russian.
     /// </summary>
-    /// <param name="input">input text.</param>
+    /// <param name="input">Input text.</param>
+    /// <param name="translator">Translator type.</param>
     /// <returns>Translated text.</returns>
-    string Translate(string input);
+    string Translate(string input, Enumerations.Translator translator);
 }

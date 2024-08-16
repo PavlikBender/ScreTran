@@ -40,11 +40,6 @@
                     <DropShadowEffect BlurRadius="0" ShadowDepth="3" />
                 </TextBlock.Effect>
             </TextBlock>
-            <TextBlock x:Name="Confidence" Grid.Row="0" Margin="5,1" Text="{Binding Parameters.Confidence, Mode=TwoWay}" d:Text="0" FontSize="12" Foreground="White" Opacity="0.5" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <TextBlock.Effect>
-                    <DropShadowEffect BlurRadius="0" ShadowDepth="2" />
-                </TextBlock.Effect>
-            </TextBlock>
         </Grid>
     </Border>
 </Window>

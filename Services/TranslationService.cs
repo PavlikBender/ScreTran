@@ -1,5 +1,8 @@
-﻿using System.Net.Http;
+﻿using System.Diagnostics;
+using System.Net.Http;
+using System.Text;
 using System.Web;
+using GTranslate.Translators;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,24 +10,45 @@ namespace ScreTran;
 
 public class TranslationService : ITranslationService
 {
+    private readonly GoogleTranslator _googleTranslator;
+    private readonly YandexTranslator _yandexTranslator;
+    private readonly BingTranslator _bingTranslator;
+
     public TranslationService()
     {
+        _googleTranslator = new GoogleTranslator();
+        _yandexTranslator = new YandexTranslator();
+        _bingTranslator = new BingTranslator();
     }
 
     /// <summary>
     /// Translate input from english to russian.
     /// </summary>
-    /// <param name="input">input text.</param>
+    /// <param name="input">Input text.</param>
+    /// <param name="translator">Translator type.</param>
     /// <returns>Translated text.</returns>
-    public string Translate(string input)
+    public string Translate(string input, Enumerations.Translator translator)
     {
-        var from = "en";
-        var to = "ru";
-        var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={from}&tl={to}&dt=t&q={HttpUtility.UrlEncode(input)}";
+        return Task.Run(async () => await TranslateAsync(input, translator)).Result;
+    }
 
-        using var client = new HttpClient();
-        var response = Task.Run(async () => await client.GetStringAsync(url).ConfigureAwait(false)).Result;
-        var translatedArray = JsonConvert.DeserializeObject<JArray>(response)!.First().Value<JArray>();
-        return string.Join("", translatedArray!.Select(t => t.First().Value<string>()));
+    /// <summary>
+    /// Translate input from english to russian asynchroniously.
+    /// </summary>
+    /// <param name="input">Input text.</param>
+    /// <param name="translator">Translator type.</param>
+    /// <returns>Translated text.</returns>
+    private async Task<string> TranslateAsync(string input, Enumerations.Translator translator)
+    {
+        if (translator == Enumerations.Translator.Google)
+            return (await _googleTranslator.TranslateAsync(input, "ru")).Translation;
+        if (translator == Enumerations.Translator.Yandex)
+            return (await _yandexTranslator.TranslateAsync(input, "ru")).Translation;
+        if (translator == Enumerations.Translator.Bing)
+            return (await _bingTranslator.TranslateAsync(input, "ru")).Translation;
+
+        return input;
     }
 }
+
+

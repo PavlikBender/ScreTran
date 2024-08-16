@@ -5,12 +5,6 @@ namespace ScreTran;
 public partial class ParametersService : ObservableObject, IParametersService
 {
     /// <summary>
-    /// Current confidence.
-    /// </summary>
-    [ObservableProperty]
-    private float _confidence;
-
-    /// <summary>
     /// Translated line.
     /// </summary>
     [ObservableProperty]
@@ -26,6 +20,5 @@ public partial class ParametersService : ObservableObject, IParametersService
     {
         SelectionBorderThickness = 5;
         TranslatedLine = "<Окно перевода>";
-        Confidence = 0;
     }
 }
