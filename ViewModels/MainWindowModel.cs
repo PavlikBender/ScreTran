@@ -1,8 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Xaml.Behaviors;
 using RawInput;
+using System.Collections.ObjectModel;
 
 namespace ScreTran;
 
@@ -34,10 +33,16 @@ public partial class MainWindowModel : ObservableObject
     private SettingsModel _settings;
 
     /// <summary>
-    /// List of behaviours.
+    /// List of translators.
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<Enumerations.Translator> _translators;
+
+    /// <summary>
+    /// List of models.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<Enumerations.Model> _models;
 
     /// <summary>
     /// Start execution.
@@ -115,6 +120,14 @@ public partial class MainWindowModel : ObservableObject
             Enumerations.Translator.Google,
             Enumerations.Translator.Yandex,
             Enumerations.Translator.Bing,
+        ];
+
+        _models =
+        [
+            Enumerations.Model.English,
+            Enumerations.Model.Korean,
+            Enumerations.Model.Chinese,
+            Enumerations.Model.Japanese,
         ];
 
         IsStarted = false;

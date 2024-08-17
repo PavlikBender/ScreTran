@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using OpenCvSharp;
 using Sdcb.PaddleInference;
 using Sdcb.PaddleOCR;
+using Sdcb.PaddleOCR.Models;
 using Sdcb.PaddleOCR.Models.Local;
 
 namespace ScreTran;
@@ -13,13 +14,15 @@ public class ExecutionService : IExecutionService
     private readonly IParametersService _parameters;
     private readonly ITranslationService _translationService;
     private readonly SettingsModel _settings;
-    private  Timer _timer;
+    private Timer _timer;
     private readonly string _regExPattern;
 
-    private readonly PaddleOcrAll _paddleOcrAll;
+    private PaddleOcrAll _paddleOcrAll;
 
     private Task _lastTask;
     private string _lastLine;
+
+    private Enumerations.Model _currentModel;
 
     public ExecutionService(ISettingsService settingsService, IParametersService parametersService, ITranslationService translationService)
     {
@@ -31,12 +34,7 @@ public class ExecutionService : IExecutionService
 
         _regExPattern = @"\W";
 
-        _paddleOcrAll = new PaddleOcrAll(LocalFullModels.EnglishV4, PaddleDevice.Onnx())
-        {
-            AllowRotateDetection = false,
-            Enable180Classification = false,
-        };
-
+        InitializePaddleOcr();
     }
 
     /// <summary>
@@ -46,6 +44,12 @@ public class ExecutionService : IExecutionService
     {
         var period = (int)(1000 * _settings.Period);
         _timer = new Timer(ProccessByTimerCommands, null, 0, period);
+
+        // If model was changed.
+        if (_currentModel != _settings.OcrModel)
+        {
+            InitializePaddleOcr();
+        }
     }
 
     /// <summary>
@@ -54,6 +58,57 @@ public class ExecutionService : IExecutionService
     public void Stop()
     {
         _timer.Dispose();
+    }
+
+    /// <summary>
+    /// Возвращает модель OCR для указанного языка.
+    /// </summary>
+    /// <param name="model">Языковая модель.</param>
+    /// <returns>Модель OCR для указанного языка.</returns>
+    private FullOcrModel GetOcrModel(Enumerations.Model model)
+    {
+        if (model == Enumerations.Model.English)
+        {
+            // Возвращает английскую модель OCR
+            return LocalFullModels.EnglishV4;
+        }
+
+        if (model == Enumerations.Model.Japanese)
+        {
+            // Возвращает японскую модель OCR
+            return LocalFullModels.JapanV4;
+        }
+
+        if (model == Enumerations.Model.Korean)
+        {
+            // Возвращает корейскую модель OCR
+            return LocalFullModels.KoreanV4;
+        }
+
+        if (model == Enumerations.Model.Chinese)
+        {
+            // Возвращает китайскую модель OCR
+            return LocalFullModels.ChineseV4;
+        }
+
+        // Возвращает английскую модель OCR по умолчанию
+        return LocalFullModels.EnglishV4;
+    }
+
+    /// <summary>
+    /// Инициализирует PaddleOCR с использованием текущей модели OCR.
+    /// </summary>
+    private void InitializePaddleOcr()
+    {
+        // Получаем текущую модель OCR из настроек
+        _currentModel = _settings.OcrModel;
+
+        // Инициализируем PaddleOcrAll с указанной моделью и настройками
+        _paddleOcrAll = new PaddleOcrAll(GetOcrModel(_currentModel), PaddleDevice.Onnx())
+        {
+            AllowRotateDetection = false, // Отключаем детекцию поворота
+            Enable180Classification = false, // Отключаем классификацию на 180 градусов
+        };
     }
 
     /// <summary>

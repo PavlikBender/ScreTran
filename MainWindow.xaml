@@ -9,7 +9,7 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DataContext="{d:DesignInstance Type=local:MainWindowModel}"
     Width="600"
-    Height="460"
+    Height="530"
     mc:Ignorable="d"
     Title="ScreTran" Background="#FF313338" WindowStyle="None" ResizeMode="NoResize" Loaded="Window_Loaded">
 
@@ -158,6 +158,7 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -175,7 +176,16 @@
                                     </ComboBox.Resources>
                                 </ComboBox>
                             </StackPanel>
-                            <StackPanel Grid.Row="2" ToolTip="Горячая клавиша, при нажатии которой скрываются/восстанавливаются области распознавания текста и перевода.&#x0a;При скрытии областей перевод останавливается.&#x0a;При восстановлении областей автоматически запускается перевод.">
+                            <StackPanel Grid.Row="2" ToolTip="ЭКСПЕРИМЕНТАЛЬНАЯ НАСТРОЙКА!!!&#x0a;Модель используемая для распознавания текста с экрана.&#x0a;Недоступно для изменения если программа находится в процессе перевода.">
+                                <Label Content="Модель"/>
+                                <ComboBox Style="{DynamicResource ComboBoxStyle1}" SelectedItem="{Binding Settings.OcrModel, Mode=TwoWay}" ItemsSource="{Binding Models}" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" IsEnabled="{Binding IsStarted, Converter={StaticResource BoolToInvertedBoolConverter}}">
+                                    <ComboBox.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FF1E1F22" />
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowFrameBrushKey}"/>
+                                    </ComboBox.Resources>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" ToolTip="Горячая клавиша, при нажатии которой скрываются/восстанавливаются области распознавания текста и перевода.&#x0a;При скрытии областей перевод останавливается.&#x0a;При восстановлении областей автоматически запускается перевод.">
                                 <Label Content="Горячая клавиша"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -188,15 +198,15 @@
                                     <Button Grid.Column="2" Content="Очистить" Command="{Binding ClearKeyCommand}" Style="{StaticResource StandardButtonStyle}" Width="100" Height="26" HorizontalAlignment="Right"/>
                                 </Grid>
                             </StackPanel>
-                            <StackPanel Grid.Row="3" ToolTip="Указывается частота в секундах с которой будет делаться захват экрана.&#x0a;Чем меньше частота, тем больше нагрузка на процессор.&#x0a;Если сделать частоту слишком большой - может происходить пропуск реплик.&#x0a;Недоступно для изменения если программа находится в процессе перевода.">
+                            <StackPanel Grid.Row="4" ToolTip="Указывается частота в секундах с которой будет делаться захват экрана.&#x0a;Чем меньше частота, тем больше нагрузка на процессор.&#x0a;Если сделать частоту слишком большой - может происходить пропуск реплик.&#x0a;Недоступно для изменения если программа находится в процессе перевода.">
                                 <Label Content="Частота захвата экрана (с.)"/>
                                 <xctk:DecimalUpDown Value="{Binding Settings.Period}" Increment=".1" Maximum="10" Minimum="0.3" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" IsEnabled="{Binding IsStarted, Converter={StaticResource BoolToInvertedBoolConverter}}"/>
                             </StackPanel>
-                            <StackPanel Grid.Row="4" Margin="12" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Grid.Row="5" Margin="12" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button x:Name="ResetSettingsToDefault" Margin="0,0,8,0" Content="Вернуть по умолчанию" Command="{Binding ResetSettingsToDefaultCommand}" Style="{StaticResource StandardButtonStyle}" ToolTip="Вернуть настройки по умолчанию."/>
                                 <Button x:Name="ResetWindowPosition" Content="Сбросить положение окон" Command="{Binding ResetWindowsPositionCommand}" Style="{StaticResource StandardButtonStyle}"/>
                             </StackPanel>
-                            <TextBlock Grid.Row="5" Margin="0,0,0,8" FontSize="12" HorizontalAlignment="Center">
+                            <TextBlock Grid.Row="6" Margin="0,0,0,8" FontSize="12" HorizontalAlignment="Center">
                                 <Hyperlink x:Name="Link" NavigateUri="https://github.com/PavlikBender/ScreTran" Foreground="#FFAFAFAF">О проекте</Hyperlink>
                             </TextBlock>
                         </Grid>

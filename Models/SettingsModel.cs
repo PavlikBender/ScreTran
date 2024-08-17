@@ -31,6 +31,12 @@ public partial class SettingsModel : ObservableObject
     private Enumerations.Translator _translator;
 
     /// <summary>
+    /// Model.
+    /// </summary>
+    [ObservableProperty]
+    private Enumerations.Model _ocrModel;
+
+    /// <summary>
     /// Selection window position.
     /// </summary>
     [ObservableProperty]
@@ -73,5 +79,6 @@ public partial class SettingsModel : ObservableObject
         Key = new Key(0x7B);
         Period = 1.0f;
         Translator = Enumerations.Translator.Google;
+        OcrModel = Enumerations.Model.English;
     }
 }

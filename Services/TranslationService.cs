@@ -1,22 +1,17 @@
-﻿using System.Diagnostics;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 using System.Web;
 using GTranslate.Translators;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ScreTran;
 
 public class TranslationService : ITranslationService
 {
-    private readonly GoogleTranslator _googleTranslator;
     private readonly YandexTranslator _yandexTranslator;
     private readonly BingTranslator _bingTranslator;
 
     public TranslationService()
     {
-        _googleTranslator = new GoogleTranslator();
         _yandexTranslator = new YandexTranslator();
         _bingTranslator = new BingTranslator();
     }
@@ -41,13 +36,29 @@ public class TranslationService : ITranslationService
     private async Task<string> TranslateAsync(string input, Enumerations.Translator translator)
     {
         if (translator == Enumerations.Translator.Google)
-            return (await _googleTranslator.TranslateAsync(input, "ru")).Translation;
+            return await TranslateGoogleAsync(input);
         if (translator == Enumerations.Translator.Yandex)
             return (await _yandexTranslator.TranslateAsync(input, "ru")).Translation;
         if (translator == Enumerations.Translator.Bing)
             return (await _bingTranslator.TranslateAsync(input, "ru")).Translation;
 
         return input;
+    }
+
+    /// <summary>
+    /// Translate input from english to russian GoogleTranslate asynchroniously.
+    /// </summary>
+    /// <param name="input">input text.</param>
+    /// <returns>Translated text.</returns>
+    public async Task<string> TranslateGoogleAsync(string input)
+    {
+        var from = "en";
+        var to = "ru";
+        var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={from}&tl={to}&dt=t&q={HttpUtility.UrlEncode(input)}";
+
+        using var client = new HttpClient();
+        var response = await client.GetStringAsync(url).ConfigureAwait(false);
+        return (string)JArray.Parse(response)[0][0][0];
     }
 }
 

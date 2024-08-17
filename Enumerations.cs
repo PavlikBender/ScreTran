@@ -5,6 +5,14 @@ public class Enumerations
     {
         Google,
         Yandex,
-        Bing
+        Bing,
+    }
+
+    public enum Model
+    {
+        English,
+        Korean,
+        Chinese,
+        Japanese,
     }
 }
