@@ -52,9 +52,8 @@ public class TranslationService : ITranslationService
     /// <returns>Translated text.</returns>
     public async Task<string> TranslateGoogleAsync(string input)
     {
-        var from = "en";
         var to = "ru";
-        var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={from}&tl={to}&dt=t&q={HttpUtility.UrlEncode(input)}";
+        var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={to}&dt=t&q={HttpUtility.UrlEncode(input)}";
 
         using var client = new HttpClient();
         var response = await client.GetStringAsync(url).ConfigureAwait(false);
