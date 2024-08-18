@@ -6,8 +6,8 @@
 
 ## Видеоинструкция
 
-<a href="https://www.youtube.com/watch?v=nYHEGliijqc" target="_blank">
- <img src="https://img.youtube.com/vi/nYHEGliijqc/hqdefault.jpg" alt="Посмотреть инструкцию" />
+<a href="https://youtu.be/vO9R1nvs_Gs" target="_blank">
+ <img src="https://img.youtube.com/vi/vO9R1nvs_Gs/hqdefault.jpg" alt="Посмотреть инструкцию" />
 </a>
 
 Для распознавания текста используется Paddle OCR.
