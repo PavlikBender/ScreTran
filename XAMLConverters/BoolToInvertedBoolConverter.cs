@@ -5,13 +5,7 @@ namespace ScreTran;
 
 class BoolToInvertedBoolConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        var boolValue = (bool)value;
-        return !boolValue;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public static object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var boolValue = (bool)value;
         return !boolValue;

@@ -37,18 +37,12 @@ public class WindowService : IWindowService
     /// </summary>
     private readonly Dictionary<string, Window> _createdWindows;
 
-    /// <summary>
-    /// List of windows always on top.
-    /// </summary>
-    private readonly List<Window> _onTopWindows;
-
     public WindowService()
     {
         _owner = null;
         _ownerHandle = IntPtr.Zero;
         _windows = new();
         _createdWindows = new();
-        _onTopWindows = new();
 
         _timer = new Timer(ProccessByTimerCommands, null, 0, 1000);
     }
@@ -93,7 +87,7 @@ public class WindowService : IWindowService
             _createdWindows[windowName] = (Window)App.GetService(_windows[windowName]);
         }
 
-        if (_owner?.IsLoaded == true && !Equals(_owner, _createdWindows[windowName]))
+        if (_owner?.IsLoaded && !Equals(_owner, _createdWindows[windowName]))
             _createdWindows[windowName].Owner = _owner;
 
         _createdWindows[windowName].Show();

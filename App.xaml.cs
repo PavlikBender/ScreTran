@@ -19,7 +19,7 @@ public partial class App : Application
     /// <summary>
     /// Existing windows registration for windows service.
     /// </summary>
-    private void RegisterWindows()
+    private static void RegisterWindows()
     {
         var windowService = GetService<IWindowService>();
         windowService.Register<SelectionWindow>();

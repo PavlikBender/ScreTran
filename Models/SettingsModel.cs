@@ -62,7 +62,7 @@ public partial class SettingsModel : ObservableObject
     /// <summary>
     /// Reset window positions to 0.
     /// </summary>
-    public void ResetWindowPositions()
+    public static void ResetWindowPositions()
     {
         SelectionWindowPosition.Left = 0;
         SelectionWindowPosition.Top = 0;
@@ -73,7 +73,7 @@ public partial class SettingsModel : ObservableObject
     /// <summary>
     /// Reset settings to default values.
     /// </summary>
-    public void ResetToDefault()
+    public static void ResetToDefault()
     {
         FontSize = 21;
         Key = new Key(0x7B);

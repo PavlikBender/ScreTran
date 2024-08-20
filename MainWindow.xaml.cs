@@ -69,7 +69,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Expander_Expanded(object sender, RoutedEventArgs e)
+    private static void Expander_Expanded(object sender, RoutedEventArgs e)
     {
         if (ExpandedArea == null)
             return;
@@ -77,7 +77,7 @@ public partial class MainWindow : Window
         Height += ExpandedArea.ActualHeight;
     }
 
-    private void Expander_Collapsed(object sender, RoutedEventArgs e)
+    private static void Expander_Collapsed(object sender, RoutedEventArgs e)
     {
         Height -= ExpandedArea.ActualHeight;
     }

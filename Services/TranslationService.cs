@@ -50,7 +50,7 @@ public class TranslationService : ITranslationService
     /// </summary>
     /// <param name="input">input text.</param>
     /// <returns>Translated text.</returns>
-    public async Task<string> TranslateGoogleAsync(string input)
+    public static async Task<string> TranslateGoogleAsync(string input)
     {
         var to = "ru";
         var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={to}&dt=t&q={HttpUtility.UrlEncode(input)}";

@@ -35,7 +35,7 @@ public partial class TranslationWindow : Window
         CaptureMouse();
     }
 
-    private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private static void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
         ReleaseMouseCapture();
     }
