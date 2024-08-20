@@ -1,6 +1,6 @@
 # ![](/ScreTranLogoSmall.png) ScreTran
 Простой и удобный экранный переводчик
-### [:arrow_right: Скачать последнюю версию](https://github.com/PavlikBender/ScreTran/releases/download/v1.2.5/ScreTran.v1.2.5.zip)
+### [:arrow_right: Скачать последнюю версию](https://github.com/PavlikBender/ScreTran/releases/download/v1.2.5/ScreTran.v.1.2.5.zip)
 
 #### Не забудьте поддержать меня: [DonationAlerts](https://www.donationalerts.com/r/pavlikbender) 
 
