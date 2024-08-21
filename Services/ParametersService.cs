@@ -2,7 +2,7 @@
 
 namespace ScreTran;
 
-public partial class ParametersService : ObservableObject
+public partial class ParametersService : ObservableObject, IParametersService
 {
     /// <summary>
     /// Translated line.

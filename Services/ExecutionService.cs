@@ -65,7 +65,7 @@ public class ExecutionService : IExecutionService
     /// </summary>
     /// <param name="model">Языковая модель.</param>
     /// <returns>Модель OCR для указанного языка.</returns>
-    private static FullOcrModel GetOcrModel(Enumerations.Model model)
+    private FullOcrModel GetOcrModel(Enumerations.Model model)
     {
         if (model == Enumerations.Model.English)
         {

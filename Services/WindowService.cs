@@ -87,7 +87,7 @@ public class WindowService : IWindowService
             _createdWindows[windowName] = (Window)App.GetService(_windows[windowName]);
         }
 
-        if (_owner?.IsLoaded && !Equals(_owner, _createdWindows[windowName]))
+        if (_owner?.IsLoaded == true && !Equals(_owner, _createdWindows[windowName]))
             _createdWindows[windowName].Owner = _owner;
 
         _createdWindows[windowName].Show();
