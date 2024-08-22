@@ -37,18 +37,12 @@ public class WindowService : IWindowService
     /// </summary>
     private readonly Dictionary<string, Window> _createdWindows;
 
-    /// <summary>
-    /// List of windows always on top.
-    /// </summary>
-    private readonly List<Window> _onTopWindows;
-
     public WindowService()
     {
         _owner = null;
         _ownerHandle = IntPtr.Zero;
         _windows = new();
         _createdWindows = new();
-        _onTopWindows = new();
 
         _timer = new Timer(ProccessByTimerCommands, null, 0, 1000);
     }
