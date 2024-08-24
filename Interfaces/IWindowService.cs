@@ -1,9 +1,15 @@
-﻿using System.Windows;
+﻿using System.Drawing;
+using System.Windows;
 
 namespace ScreTran;
 
 public interface IWindowService
 {
+    /// <summary>
+    /// Gets window coordinates.
+    /// </summary>
+    Rectangle? GetWindowCoordinates(string windowName);
+
     /// <summary>
     /// Close all showing windows.
     /// </summary>

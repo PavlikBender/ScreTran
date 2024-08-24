@@ -13,6 +13,7 @@ public class ExecutionService : IExecutionService
 {
     private readonly IParametersService _parameters;
     private readonly ITranslationService _translationService;
+    private readonly IWindowService _windowService;
     private readonly SettingsModel _settings;
     private Timer _timer;
     private readonly string _regExPattern;
@@ -24,9 +25,10 @@ public class ExecutionService : IExecutionService
 
     private Enumerations.Model _currentModel;
 
-    public ExecutionService(ISettingsService settingsService, IParametersService parametersService, ITranslationService translationService)
+    public ExecutionService(ISettingsService settingsService, IParametersService parametersService, ITranslationService translationService, IWindowService windowService)
     {
         _parameters = parametersService;
+        _windowService = windowService;
         _settings = settingsService.Settings;
 
         _lastLine = string.Empty;
@@ -57,7 +59,7 @@ public class ExecutionService : IExecutionService
     /// </summary>
     public void Stop()
     {
-        _timer.Dispose();
+        _timer?.Dispose();
     }
 
     /// <summary>
@@ -129,15 +131,17 @@ public class ExecutionService : IExecutionService
     /// <returns>image byte array of selection area.</returns>
     private byte[] GetImage()
     {
-        var selectionWindowPosition = _settings.SelectionWindowPosition;
+        var selectionWindowCoordinates = _windowService.GetWindowCoordinates("SelectionWindow");
+        if (selectionWindowCoordinates == null)
+            return Array.Empty<byte>();
 
-        var bitmap = new Bitmap((int)selectionWindowPosition.Width - (_parameters.SelectionBorderThickness * 2),
-                                (int)selectionWindowPosition.Height - (_parameters.SelectionBorderThickness * 2));
+        var bitmap = new Bitmap(selectionWindowCoordinates.Value.Width,
+                                selectionWindowCoordinates.Value.Height);
         using (var g = Graphics.FromImage(bitmap))
         {
             // Сделать скриншот в области выбора.
-            g.CopyFromScreen((int)selectionWindowPosition.Left + _parameters.SelectionBorderThickness,
-                             (int)selectionWindowPosition.Top + _parameters.SelectionBorderThickness,
+            g.CopyFromScreen(selectionWindowCoordinates.Value.Left,
+                             selectionWindowCoordinates.Value.Top,
                              0,
                              0,
                              bitmap.Size,
@@ -185,7 +189,9 @@ public class ExecutionService : IExecutionService
                  .Replace(",.", ",")
                  .Replace(".,", ".")
                  .Replace("?.", "?")
+                 .Replace(".?", "?")
                  .Replace("!.", "!")
+                 .Replace(".!", "!")
                  // Remove double dot.
                  .Replace("..", ".")
                  // Restore three dot.

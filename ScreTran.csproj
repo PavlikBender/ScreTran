@@ -8,6 +8,7 @@
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>ScreTranLogo.ico</ApplicationIcon>
 		<AssemblyVersion>1.2.5</AssemblyVersion>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 	<ItemGroup>

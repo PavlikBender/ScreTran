@@ -11,7 +11,8 @@
     Width="600"
     Height="530"
     mc:Ignorable="d"
-    Title="ScreTran" Background="#FF313338" WindowStyle="None" ResizeMode="NoResize" Loaded="Window_Loaded">
+    Title="ScreTran" Background="#FF313338" WindowStyle="None" ResizeMode="NoResize" Loaded="Window_Loaded"
+    UseLayoutRounding="True">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34"/>

@@ -15,15 +15,14 @@
         Top="{Binding Position.Top, Mode=TwoWay}"
         Foreground="{x:Null}" 
         AllowsTransparency="True" 
-        WindowStyle="None" 
-        MouseMove="Window_MouseMove" 
-        MouseLeftButtonDown="Window_MouseLeftButtonDown" 
-        MouseLeftButtonUp="Window_MouseLeftButtonUp" 
+        WindowStyle="None"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Topmost="True" 
         IsTabStop="False" 
         Background="{x:Null}" 
         ResizeMode="CanResizeWithGrip"
-        ShowInTaskbar="False">
+        ShowInTaskbar="False"
+        UseLayoutRounding="True">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"/>
     </WindowChrome.WindowChrome>

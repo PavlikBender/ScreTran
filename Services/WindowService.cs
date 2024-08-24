@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -14,6 +15,20 @@ public class WindowService : IWindowService
 
     private const int SWP_SHOWWINDOW = 0x0040;
     private const int SWP_HIDEWINDOW = 0x0080;
+
+    // Структура для хранения прямоугольника
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    // Метод для получения прямоугольника окна.
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
     // Метод для удержания на переднем плане.
     [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
@@ -113,6 +128,22 @@ public class WindowService : IWindowService
             return;
         var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
         SetWindowPos(handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+    }
+
+    /// <summary>
+    /// Gets window coordinates.
+    /// </summary>
+    public Rectangle? GetWindowCoordinates(string windowName)
+    {
+        if (!_createdWindows.ContainsKey(windowName))
+            return null;
+        
+        var handle = Application.Current.Dispatcher.Invoke(() => new WindowInteropHelper(_createdWindows[windowName]).Handle);
+
+        if (GetWindowRect(handle, out RECT rect))
+            return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+
+        return null;
     }
 
     /// <summary>
