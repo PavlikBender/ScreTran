@@ -5,6 +5,12 @@ namespace ScreTran;
 public partial class ParametersService : ObservableObject, IParametersService
 {
     /// <summary>
+    /// Is in translation mode.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isStarted;
+
+    /// <summary>
     /// Translated line.
     /// </summary>
     [ObservableProperty]
@@ -20,5 +26,6 @@ public partial class ParametersService : ObservableObject, IParametersService
     {
         SelectionBorderThickness = 5;
         TranslatedLine = "<Окно перевода>";
+        IsStarted = false;
     }
 }

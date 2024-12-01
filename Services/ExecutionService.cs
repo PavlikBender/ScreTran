@@ -22,6 +22,7 @@ public class ExecutionService : IExecutionService
 
     private Task _lastTask;
     private string _lastLine;
+    private float _timeWithoutUpdate;
 
     private Enumerations.Model _currentModel;
 
@@ -44,6 +45,10 @@ public class ExecutionService : IExecutionService
     /// </summary>
     public void Start()
     {
+        _timeWithoutUpdate = 0;
+        _parameters.TranslatedLine = string.Empty;
+        _lastLine = string.Empty;
+
         var period = (int)(1000 * _settings.Period);
         _timer = new Timer(ProccessByTimerCommands, null, 0, period);
 
@@ -181,7 +186,20 @@ public class ExecutionService : IExecutionService
             var line = PaddleOCRRecognize(GetImage());
 
             if (string.IsNullOrWhiteSpace(line))
+            {
+                _timeWithoutUpdate++;
+
+                if (_timeWithoutUpdate > _settings.HideInterval)
+                {
+                    _timeWithoutUpdate = 0;
+                    _parameters.TranslatedLine = string.Empty;
+                    _lastLine = string.Empty;
+                }
+
                 return;
+            }
+
+            _timeWithoutUpdate = 0;
 
             line = line.Trim()
                  // Для корректной обработки переводчиком нужно убрать переводы строк 

@@ -11,14 +11,14 @@ public partial class SelectionViewModel : ObservableObject
     public WindowPositionModel _position;
 
     /// <summary>
-    /// Selection area border thickness.
+    /// App parameters.
     /// </summary>
     [ObservableProperty]
-    public int _borderThickness;
+    private IParametersService _parameters;
 
     public SelectionViewModel(ISettingsService settingsService, IParametersService parametersService) 
     { 
         Position = settingsService.Settings.SelectionWindowPosition;
-        BorderThickness = parametersService.SelectionBorderThickness;
+        Parameters = parametersService;
     }
 }

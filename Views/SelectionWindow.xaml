@@ -16,7 +16,6 @@
         Foreground="{x:Null}" 
         AllowsTransparency="True" 
         WindowStyle="None" 
-        ResizeMode="CanResizeWithGrip"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Topmost="True" 
         IsTabStop="False" 
@@ -26,12 +25,29 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"/>
     </WindowChrome.WindowChrome>
-    <Border BorderThickness="{Binding BorderThickness}" d:BorderThickness="5" CornerRadius="5">
-        <Border.BorderBrush>
-            <SolidColorBrush Color="#FF999999" Opacity="0.40"/>
-        </Border.BorderBrush>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="ResizeMode" Value="CanResizeWithGrip" />
+            <Style.Triggers>
+                <DataTrigger Value="True" Binding="{Binding Parameters.IsStarted}">
+                    <Setter Property="ResizeMode" Value="NoResize" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Border BorderThickness="{Binding Parameters.SelectionBorderThickness}" d:BorderThickness="5" CornerRadius="5">
         <Border.Background>
             <SolidColorBrush Color="Black" Opacity="0.005"/>
         </Border.Background>
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="#66999999" />
+                <Style.Triggers>
+                    <DataTrigger Value="True" Binding="{Binding Parameters.IsStarted}">
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
     </Border>
 </Window>

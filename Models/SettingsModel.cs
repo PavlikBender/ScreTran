@@ -23,6 +23,12 @@ public partial class SettingsModel : ObservableObject
     [ObservableProperty]
     private float _period;
 
+    // TODO Не должно быть меньше _period
+    /// <summary>
+    /// Hide interval.
+    /// </summary>
+    [ObservableProperty]
+    private int _hideInterval;
 
     /// <summary>
     /// Translator.
@@ -78,6 +84,7 @@ public partial class SettingsModel : ObservableObject
         FontSize = 21;
         Key = new Key(0x7B);
         Period = 1.0f;
+        HideInterval = 2;
         Translator = Enumerations.Translator.Google;
         OcrModel = Enumerations.Model.English;
     }

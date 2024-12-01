@@ -36,6 +36,21 @@ public interface IWindowService
     void Normalize(string windowName);
 
     /// <summary>
+    /// Set window click thru style.
+    /// </summary>
+    void SetWindowClickThru(string windowName);
+
+    /// <summary>
+    /// Revert click thru style.
+    /// </summary>
+    void SetWindowClickable(string windowName);
+
+    /// <summary>
+    /// Exclude window from capture.
+    /// </summary>
+    void ExcludeFromCapture(string windowName);
+
+    /// <summary>
     /// Установить владельца всех окон.
     /// </summary>
     /// <param name="owner">Владелец окон.</param>

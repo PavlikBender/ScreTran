@@ -2,6 +2,16 @@
 
 public interface IParametersService
 {
+
+    /// <summary>
+    /// Is in translation mode.
+    /// </summary>
+    bool IsStarted
+    {
+        get;
+        set;
+    }
+
     /// <summary>
     /// Current translated line.
     /// </summary>
@@ -14,8 +24,8 @@ public interface IParametersService
     /// <summary>
     /// Border thickness of selection area.
     /// </summary>
-    int SelectionBorderThickness 
+    int SelectionBorderThickness
     {
-        get; 
+        get;
     }
 }

@@ -12,13 +12,11 @@ public partial class MainWindowModel : ObservableObject
     private readonly IExecutionService _executionService;
     private readonly IInputService _inputSevice;
 
-    private bool _isMinimized;
-
     /// <summary>
-    /// Is execution service started?
+    /// App parameters.
     /// </summary>
     [ObservableProperty]
-    private bool _isStarted;
+    private IParametersService _parameters;
 
     /// <summary>
     /// Is key sets in current moment.
@@ -50,8 +48,10 @@ public partial class MainWindowModel : ObservableObject
     [RelayCommand]
     private void Start()
     {
+        _windowService.SetWindowClickThru("TranslationWindow");
+        _windowService.SetWindowClickThru("SelectionWindow");
         _executionService.Start();
-        IsStarted = true;
+        Parameters.IsStarted = true;
     }
 
     /// <summary>
@@ -60,8 +60,10 @@ public partial class MainWindowModel : ObservableObject
     [RelayCommand]
     private void Stop()
     {
+        _windowService.SetWindowClickable("TranslationWindow");
+        _windowService.SetWindowClickable("SelectionWindow");
         _executionService.Stop();
-        IsStarted = false;
+        Parameters.IsStarted = false;
     }
 
     /// <summary>
@@ -113,6 +115,8 @@ public partial class MainWindowModel : ObservableObject
     public MainWindowModel(ISettingsService settingsService, IParametersService parametersService, IWindowService windowService, IExecutionService executionService, IInputService inputService)
     {
         _settingsService = settingsService;
+        Parameters = parametersService;
+
         Settings = _settingsService.Settings;
 
         _translators =
@@ -130,8 +134,6 @@ public partial class MainWindowModel : ObservableObject
             Enumerations.Model.Japanese,
         ];
 
-        IsStarted = false;
-
         IsKeySetting = false;
 
         _executionService = executionService;
@@ -139,10 +141,11 @@ public partial class MainWindowModel : ObservableObject
         _windowService = windowService;
         _windowService.Show("SelectionWindow");
         _windowService.Show("TranslationWindow");
+        _windowService.ExcludeFromCapture("SelectionWindow");
+        _windowService.ExcludeFromCapture("TranslationWindow");
 
         _inputSevice = inputService;
         _inputSevice.KeyDown += InputSevice_KeyDown;
-        _isMinimized = false;
     }
 
     /// <summary>
@@ -161,20 +164,14 @@ public partial class MainWindowModel : ObservableObject
 
         if (Equals(e.Key, Settings.Key))
         {
-            if (_isMinimized)
+            if (Parameters.IsStarted)
             {
-                _windowService.Normalize("SelectionWindow");
-                _windowService.Normalize("TranslationWindow");
-                Start();
+                Stop();
             }
             else
             {
-                _windowService.Minimize("SelectionWindow");
-                _windowService.Minimize("TranslationWindow");
-                Stop();
+                Start();
             }
-
-            _isMinimized = !_isMinimized;
         }
     }
 }

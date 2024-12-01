@@ -16,6 +16,11 @@ public class WindowService : IWindowService
     private const int SWP_SHOWWINDOW = 0x0040;
     private const int SWP_HIDEWINDOW = 0x0080;
 
+    private const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
+
+    private const int WS_EX_TRANSPARENT = 0x00000020;
+    private const int GWL_EXSTYLE = (-20);
+
     // Структура для хранения прямоугольника
     [StructLayout(LayoutKind.Sequential)]
     public struct RECT
@@ -26,6 +31,10 @@ public class WindowService : IWindowService
         public int Bottom;
     }
 
+    // Метод для скрытия окна при захвате изображения.
+    [DllImport("user32.dll")]
+    public static extern uint SetWindowDisplayAffinity(IntPtr hWnd, uint dwAffinity);
+
     // Метод для получения прямоугольника окна.
     [DllImport("user32.dll", SetLastError = true)]
     public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
@@ -33,6 +42,12 @@ public class WindowService : IWindowService
     // Метод для удержания на переднем плане.
     [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
     public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+
+    [DllImport("user32.dll")]
+    public static extern int GetWindowLong(IntPtr hwnd, int index);
+
+    [DllImport("user32.dll")]
+    static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
 
     // Владелец всех окон.
     private Window? _owner;
@@ -131,6 +146,43 @@ public class WindowService : IWindowService
     }
 
     /// <summary>
+    /// Set window click thru style.
+    /// </summary>
+    public void SetWindowClickThru(string windowName)
+    {
+        if (!_createdWindows.ContainsKey(windowName))
+            return;
+        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
+
+        var extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
+        SetWindowLong(handle, GWL_EXSTYLE, extendedStyle | WS_EX_TRANSPARENT);
+    }
+
+    /// <summary>
+    /// Revert click thru style.
+    /// </summary>
+    public void SetWindowClickable(string windowName)
+    {
+        if (!_createdWindows.ContainsKey(windowName))
+            return;
+        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
+
+        var extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
+        SetWindowLong(handle, GWL_EXSTYLE, extendedStyle & ~WS_EX_TRANSPARENT);
+    }
+
+    /// <summary>
+    /// Exclude window from capture.
+    /// </summary>
+    public void ExcludeFromCapture(string windowName)
+    {
+        if (!_createdWindows.ContainsKey(windowName))
+            return;
+        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
+        SetWindowDisplayAffinity(handle, WDA_EXCLUDEFROMCAPTURE);
+    }
+
+    /// <summary>
     /// Gets window coordinates.
     /// </summary>
     public Rectangle? GetWindowCoordinates(string windowName)
@@ -138,9 +190,12 @@ public class WindowService : IWindowService
         if (!_createdWindows.ContainsKey(windowName))
             return null;
         
-        var handle = Application.Current.Dispatcher.Invoke(() => new WindowInteropHelper(_createdWindows[windowName]).Handle);
+        var handle = Application.Current?.Dispatcher.Invoke(() => new WindowInteropHelper(_createdWindows[windowName]).Handle);
 
-        if (GetWindowRect(handle, out RECT rect))
+        if (handle == null)
+            return null;
+
+        if (GetWindowRect(handle.Value, out RECT rect))
             return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
 
         return null;
