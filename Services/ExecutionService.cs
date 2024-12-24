@@ -111,7 +111,7 @@ public class ExecutionService : IExecutionService
         _currentModel = _settings.OcrModel;
 
         // Инициализируем PaddleOcrAll с указанной моделью и настройками
-        _paddleOcrAll = new PaddleOcrAll(GetOcrModel(_currentModel), PaddleDevice.Onnx())
+        _paddleOcrAll = new PaddleOcrAll(GetOcrModel(_currentModel), PaddleDevice.Onnx(2))
         {
             AllowRotateDetection = false, // Отключаем детекцию поворота
             Enable180Classification = false, // Отключаем классификацию на 180 градусов
@@ -140,7 +140,7 @@ public class ExecutionService : IExecutionService
         if (selectionWindowCoordinates == null)
             return Array.Empty<byte>();
 
-        var bitmap = new Bitmap(selectionWindowCoordinates.Value.Width,
+        using var bitmap = new Bitmap(selectionWindowCoordinates.Value.Width,
                                 selectionWindowCoordinates.Value.Height);
         using (var g = Graphics.FromImage(bitmap))
         {

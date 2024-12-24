@@ -42,7 +42,7 @@
             <Setter Property="Background" Value="Transparent" />
             <Style.Triggers>
                 <DataTrigger Value="True" Binding="{Binding Parameters.IsStarted}">
-                    <Setter Property="Background" Value="#72000000" />
+                    <Setter Property="Background" Value="#99000000" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -50,7 +50,7 @@
     <Border CornerRadius="5">
         <Border.Style>
             <Style TargetType="Border">
-                <Setter Property="Background" Value="#72000000" />
+                <Setter Property="Background" Value="#7F000000" />
                 <Style.Triggers>
                     <DataTrigger Value="True" Binding="{Binding Parameters.IsStarted}">
                         <Setter Property="Background" Value="Transparent" />
@@ -66,7 +66,8 @@
                 x:Name="TextBlock"
                 Grid.Row="1"
                 Margin="8"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
                 VerticalAlignment="Top"
                 d:Text="Окно перевода"
                 FontFamily="Segoe UI Variable Display Semibold"

@@ -29,31 +29,36 @@ public class WindowService : IWindowService
         public int Top;
         public int Right;
         public int Bottom;
+
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle(Left, Top, Right - Left, Bottom - Top);
+        }
     }
 
     // Метод для скрытия окна при захвате изображения.
     [DllImport("user32.dll")]
-    public static extern uint SetWindowDisplayAffinity(IntPtr hWnd, uint dwAffinity);
+    public static extern uint SetWindowDisplayAffinity(nint hWnd, uint dwAffinity);
 
-    // Метод для получения прямоугольника окна.
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+    // Метод необходимый для получение прямоугольника окна.
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmGetWindowAttribute(nint hWnd, int dwAttribute, out RECT pvAttribute, int cbAttribute);
 
     // Метод для удержания на переднем плане.
     [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-    public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+    public static extern nint SetWindowPos(nint hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
     [DllImport("user32.dll")]
-    public static extern int GetWindowLong(IntPtr hwnd, int index);
+    public static extern int GetWindowLong(nint hwnd, int index);
 
     [DllImport("user32.dll")]
-    static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
+    static extern int SetWindowLong(nint hwnd, int index, int newStyle);
 
     // Владелец всех окон.
     private Window? _owner;
 
     // Его хендл.
-    private IntPtr _ownerHandle;
+    private nint _ownerHandle;
 
     private readonly Timer _timer;
 
@@ -70,7 +75,7 @@ public class WindowService : IWindowService
     public WindowService()
     {
         _owner = null;
-        _ownerHandle = IntPtr.Zero;
+        _ownerHandle = nint.Zero;
         _windows = new();
         _createdWindows = new();
 
@@ -82,7 +87,7 @@ public class WindowService : IWindowService
     /// </summary>
     private void ProccessByTimerCommands(object? state)
     {
-        if (_ownerHandle == IntPtr.Zero)
+        if (_ownerHandle == nint.Zero)
             return;
         // Таймер каждую секунду старается выставить окно владельца и его наследников на передний план.
         SetWindowPos(_ownerHandle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
@@ -124,35 +129,26 @@ public class WindowService : IWindowService
     }
 
     /// <summary>
-    /// Minimize window by window name.
+    /// Get window handle by window name.
     /// </summary>
-    public void Minimize(string windowName)
+    /// <param name="windowName">Window name.</param>
+    /// <returns>Window handle or nint.Zero.</returns>
+    public nint GetHandle(string windowName)
     {
         if (!_createdWindows.ContainsKey(windowName))
-            return;
-        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
-        SetWindowPos(handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_HIDEWINDOW);
+            return nint.Zero;
+        return new WindowInteropHelper(_createdWindows[windowName]).Handle;
     }
 
-    /// <summary>
-    /// Normalize window by window name.
-    /// </summary>
-    public void Normalize(string windowName)
-    {
-        if (!_createdWindows.ContainsKey(windowName))
-            return;
-        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
-        SetWindowPos(handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
-    }
 
     /// <summary>
     /// Set window click thru style.
     /// </summary>
     public void SetWindowClickThru(string windowName)
     {
-        if (!_createdWindows.ContainsKey(windowName))
+        var handle = GetHandle(windowName);
+        if (handle == nint.Zero)
             return;
-        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
 
         var extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
         SetWindowLong(handle, GWL_EXSTYLE, extendedStyle | WS_EX_TRANSPARENT);
@@ -163,9 +159,9 @@ public class WindowService : IWindowService
     /// </summary>
     public void SetWindowClickable(string windowName)
     {
-        if (!_createdWindows.ContainsKey(windowName))
+        var handle = GetHandle(windowName);
+        if (handle == nint.Zero)
             return;
-        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
 
         var extendedStyle = GetWindowLong(handle, GWL_EXSTYLE);
         SetWindowLong(handle, GWL_EXSTYLE, extendedStyle & ~WS_EX_TRANSPARENT);
@@ -176,10 +172,25 @@ public class WindowService : IWindowService
     /// </summary>
     public void ExcludeFromCapture(string windowName)
     {
-        if (!_createdWindows.ContainsKey(windowName))
+        var handle = GetHandle(windowName);
+        if (handle == nint.Zero)
             return;
-        var handle = new WindowInteropHelper(_createdWindows[windowName]).Handle;
+
         SetWindowDisplayAffinity(handle, WDA_EXCLUDEFROMCAPTURE);
+    }
+
+
+    /// <summary>
+    /// Получить прямоугольник окна. Аналог GetWindowRect, но более современный, так как возвращает точные координаты, а не координаты с учетом тени.
+    /// </summary>
+    /// <param name="handle">Хэндл окна.</param>
+    /// <param name="rectangle">Прямоугольник в который запишутся координаты окна.</param>
+    /// <returns>true - если удалось получить координаты окна. Иначе - false.</returns>
+    public bool GetWindowRectWithoutShadow(nint handle, out Rectangle rectangle)
+    {
+        var result = DwmGetWindowAttribute(handle, 9, out RECT rect, Marshal.SizeOf(typeof(RECT)));
+        rectangle = rect.ToRectangle();
+        return result >= 0;
     }
 
     /// <summary>
@@ -195,8 +206,8 @@ public class WindowService : IWindowService
         if (handle == null)
             return null;
 
-        if (GetWindowRect(handle.Value, out RECT rect))
-            return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+        if (GetWindowRectWithoutShadow(handle.Value, out var rectangle))
+            return rectangle;
 
         return null;
     }

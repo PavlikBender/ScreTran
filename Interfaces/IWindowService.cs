@@ -26,16 +26,6 @@ public interface IWindowService
     void Show(string windowName);
 
     /// <summary>
-    /// Minimize window by window name.
-    /// </summary>
-    void Minimize(string windowName);
-
-    /// <summary>
-    /// Normalize window by window name.
-    /// </summary>
-    void Normalize(string windowName);
-
-    /// <summary>
     /// Set window click thru style.
     /// </summary>
     void SetWindowClickThru(string windowName);

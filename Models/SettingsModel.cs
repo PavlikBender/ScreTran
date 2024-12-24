@@ -23,7 +23,6 @@ public partial class SettingsModel : ObservableObject
     [ObservableProperty]
     private float _period;
 
-    // TODO Не должно быть меньше _period
     /// <summary>
     /// Hide interval.
     /// </summary>

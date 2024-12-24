@@ -210,7 +210,7 @@
                             </StackPanel>
                             <StackPanel Grid.Row="4" ToolTip="Указывается частота в секундах с которой будет делаться захват экрана.&#x0a;Чем меньше частота, тем больше нагрузка на процессор.&#x0a;Если сделать частоту слишком большой - может происходить пропуск реплик.&#x0a;Недоступно для изменения если программа находится в процессе перевода.">
                                 <Label Content="Частота захвата экрана (с.)"/>
-                                <xctk:DecimalUpDown Value="{Binding Settings.Period}" Increment=".1" Maximum="10" Minimum="0.3" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" IsEnabled="{Binding Parameters.IsStarted, Converter={StaticResource BoolToInvertedBoolConverter}}"/>
+                                <xctk:DecimalUpDown Value="{Binding Settings.Period}" Increment=".1" Maximum="10" Minimum="0.4" Background="#FF1E1F22" BorderBrush="{x:Null}" Foreground="White" FontSize="14" IsEnabled="{Binding Parameters.IsStarted, Converter={StaticResource BoolToInvertedBoolConverter}}"/>
                             </StackPanel>
                             <StackPanel Grid.Row="5" ToolTip="Указывается количество итераций захвата экрана, после которого будет скрываться окно перевода, если в окне захвата не обнаружен текст.&#x0a;Например: частота захвата - 1с. количество итераций - 2, то при отсутствии текста для перевода, окно перевода скроется через 2с.">
                                 <Label Content="Итераций для скрытия"/>
