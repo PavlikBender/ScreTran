@@ -2,6 +2,8 @@
 Простой и удобный экранный переводчик
 ### [:arrow_right: Скачать последнюю версию](https://github.com/PavlikBender/ScreTran/releases/tag/v1.3.1)
 
+**ВАЖНО!** Перед первым запуском убедитесь, что у вас установлен [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+
 #### Не забудьте поддержать меня: [DonationAlerts](https://www.donationalerts.com/r/pavlikbender) 
 
 ## Видеоинструкция
