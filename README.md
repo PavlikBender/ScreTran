@@ -4,7 +4,7 @@
 
 **ВАЖНО!** 
 1. Перед первым запуском убедитесь, что у вас установлен [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe).
-2. Ваш процессор должен поддерживать AVX инструкции.
+2. Ваш процессор должен поддерживать [AVX](https://ru.wikipedia.org/wiki/AVX) инструкции.
 #### Не забудьте поддержать меня: [DonationAlerts](https://www.donationalerts.com/r/pavlikbender) 
 
 ## Видеоинструкция
