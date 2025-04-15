@@ -19,3 +19,8 @@
 
 ## Связь со мной
 Если у вас появились вопросы по приложению, вы можете их задать в моем [Discord-е](https://discord.com/invite/gaVrv6k).
+
+## Альтернативные решения
+- [Translumo](https://github.com/Danily07/Translumo/)
+- [LunaTranslator](https://docs.lunatranslator.org/en/)
+- [Lookuper](https://lookupper.ru/)
