@@ -23,4 +23,4 @@
 ## Альтернативные решения
 - [Translumo](https://github.com/Danily07/Translumo/)
 - [LunaTranslator](https://docs.lunatranslator.org/en/)
-- [Lookuper](https://lookupper.ru/)
+- [Lookupper](https://lookupper.ru/)
